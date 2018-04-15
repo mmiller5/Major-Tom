@@ -46,7 +46,7 @@ class PygameGame(object):
         self.bgColor = (255, 255, 255)
         pygame.init()
 
-    def run(self):
+    def run(self, server):
 
         clock = pygame.time.Clock()
         screen = pygame.display.set_mode((self.width, self.height))
@@ -58,10 +58,11 @@ class PygameGame(object):
 
         # call game-specific initialization
         self.init()
+        self.server = server
         playing = True
         while playing:
             time = clock.tick(self.fps)
-            self.timerFired(time)
+            self.timerFired()#time)
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     self.mousePressed(*(event.pos))

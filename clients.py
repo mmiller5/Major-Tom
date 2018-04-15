@@ -29,13 +29,96 @@ def handleServerMsg(server, serverMsg):
       serverMsg.put(readyMsg)
       command = msg.split("\n")
 
-# events-example0.py from 15-112 website
-# Barebones timer, mouse, and keyboard events
 
 from tkinter import *
-from dots import *
-from square import *
+#from dots import *
+#from square import *
+from Dino import *
 import random
+
+
+import pygame
+from pygamegame import PygameGame
+
+
+class Game(PygameGame):
+    def init(self):
+        self.bgColor = (0, 0, 0)
+        Dino.init()
+        self.dinos = pygame.sprite.Group()
+        
+
+    def keyPressed(self, code, mod):
+        pass
+        
+    def mousePressed(self, x, y):
+        msg = "dinoMade %d %d\n" % (x, y)
+        self.dinos.add(Dino(x, y))
+        print ("sending: ", msg,)
+        self.server.send(msg.encode())
+        
+    def timerFired(self):
+        while (serverMsg.qsize() > 0):
+            msg = serverMsg.get(False)
+            try:
+                print("received: ", msg, "\n")
+                msg = msg.split()
+                command = msg[0]
+                print(command)
+                '''
+                if (command == "myIDis"):
+                myPID = msg[1]
+                self.me.changePID(myPID)
+                '''
+                if (command == "dinoMade"):
+                    x = int(msg[2])
+                    y = int(msg[3])
+                    self.dinos.add(Dino(x, y))
+        
+                elif (command == "newPlayer"):
+                    newPID = msg[1]
+                    x = self.width/2
+                    y = self.height/2
+                    print("There's another player!")
+                    #self.otherStrangers[newPID] = Dot(newPID, x, y)
+                '''
+                elif (command == "playerMoved"):
+                PID = msg[1]
+                dx = int(msg[2])
+                dy = int(msg[3])
+                self.otherStrangers[PID].move(dx, dy)
+        
+                elif (command == "playerTeleported"):
+                PID = msg[1]
+                x = int(msg[2])
+                y = int(msg[3])
+                self.otherStrangers[PID].teleport(x, y)
+                
+                elif (command == "givePosition"):
+                x = self.me.x
+                y = self.me.y
+                msg = "takePosition %d %d\n" % (x, y)
+                self.server.send(msg.encode())
+                
+                elif (command == "takePosition"):
+                PID = msg[1]
+                x = int(msg[2])
+                y = int(msg[3])
+                if not PID in self.otherStrangers:
+                    self.otherStrangers[PID] = Dot(PID, x, y)
+                '''
+            except:
+                print("failed")
+            serverMsg.task_done()
+
+    def redrawAll(self, screen):
+        self.dinos.draw(screen)
+        
+serverMsg = Queue(100)
+threading.Thread(target = handleServerMsg, args = (server, serverMsg)).start()
+
+Game(800, 500).run(server)
+'''
 ####################################
 # customize these functions
 ####################################
@@ -201,3 +284,4 @@ serverMsg = Queue(100)
 threading.Thread(target = handleServerMsg, args = (server, serverMsg)).start()
 
 run(200, 200, serverMsg, server)
+'''

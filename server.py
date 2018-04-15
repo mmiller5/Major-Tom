@@ -56,7 +56,7 @@ playerNum = 0
 serverChannel = Queue(100)
 threading.Thread(target = serverThread, args = (clientele, serverChannel)).start()
 
-names = ["Major Tom", "Ground Control"]
+names = ["Major-Tom", "Ground-Control"]
 
 while True:
   client, address = server.accept()
@@ -69,7 +69,7 @@ while True:
     clientele[cID].send(("newPlayer %s\n" % myID).encode())
     client.send(("newPlayer %s\n" % cID).encode())
   clientele[myID] = client
-  client.send(("myIDis %s \n" % myID).encode())
+  #client.send(("myIDis %s \n" % myID).encode())
   print("connection recieved from %s" % myID)
   threading.Thread(target = handleClient, args = 
                         (client ,serverChannel, myID, clientele)).start()
