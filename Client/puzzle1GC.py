@@ -1,4 +1,3 @@
-#from puzzle1 import *
 from button1 import *
 import string
 import random
@@ -38,19 +37,19 @@ class Puzzle1GC(object):
         
     
     def makeButtons(self):
-        # gonna need to modify later. currently solution is always first button
         buttons = []
         buttonCount = 4
-        x = self.buttonLeft
-        y = self.buttonTop
-        buttons.append(Button1(x, y, Puzzle1GC.answers[self.solution], True))
+        solutionPos = random.randint(0, buttonCount - 1)        
         self.buttonLetters.add(self.solution)
-        for button in range(1, buttonCount):
+        for button in range(0, buttonCount):
             x = self.buttonLeft + (button * self.buttonSize)
             y = self.buttonTop
-            answer = self.chooseAnswer()
-            buttons.append(Button1(x, y, Puzzle1GC.answers[answer], False))
-            self.buttonLetters.add(answer)
+            if button == solutionPos:
+                buttons.append(Button1(x, y, Puzzle1GC.answers[self.solution], True))
+            else:
+                answer = self.chooseAnswer()
+                buttons.append(Button1(x, y, Puzzle1GC.answers[answer], False))
+                self.buttonLetters.add(answer)
         return buttons
     
     def chooseAnswer(self):
@@ -59,6 +58,12 @@ class Puzzle1GC(object):
             answer = random.choice(string.ascii_uppercase)
         return answer
     
+    def buttonClick(self, x, y):
+        for button in self.buttons:
+            if button.rect.collidepoint(x, y):
+                return button.isSolution
+        return None
+
     def draw(self, screen):
         self.buttons.draw(screen)
     

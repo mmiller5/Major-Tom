@@ -39,7 +39,7 @@ from pygamegame import PygameGame
 
 class Game(PygameGame):
     def init(self):
-        self.bgColor = (255, 180, 180)
+        self.bgColor = (180, 180, 180)
         self.player = "To be determined by server"
         Dino.init()
         # going to want to do "if player == GC: initialize GC stuff" later
@@ -55,10 +55,19 @@ class Game(PygameGame):
         
     def mousePressed(self, x, y):
         if self.gameStart == True:
-            msg = "dinoMade %d %d\n" % (x, y)
-            self.dinos.add(Dino(x, y))
-            print ("sending: ", msg,)
-            self.server.send(msg.encode())
+            if self.player == "GC":
+                puzzle1Correct = self.puzzle1.buttonClick(x, y)
+                if puzzle1Correct != None:
+                    forServer = True
+                    msg = "puzzle1Response %s %s\n" % (forServer, puzzle1Correct)
+                    print ("sending: ", msg,)
+                    self.server.send(msg.encode())
+            else:
+                forServer = 0
+                msg = "dinoMade %d %d %d\n" % (forServer, x, y)
+                print ("sending: ", msg,)
+                self.server.send(msg.encode())
+            
         
     def timerFired(self):
         while (serverMsg.qsize() > 0):
@@ -78,14 +87,23 @@ class Game(PygameGame):
                     self.puzzle1 = Puzzle1GC(self.solution)
             
             elif (command == "dinoMade"):
-                x = int(msg[2])
-                y = int(msg[3])
+                x = int(msg[1])
+                y = int(msg[2])
                 self.dinos.add(Dino(x, y))
     
             elif (command == "newPlayer"):
                 self.gameStart = True
                 print("There's another player!")
-              
+            
+            elif (command == "puzzle1Reception"):
+                correct = msg[1]
+                if correct == "True":
+                    self.solution = msg[2]
+                    self.puzzle1 = Puzzle1GC(self.solution)
+                else:
+                    # impose penalty
+                    pass
+
             #except:
               #  print("failed")
             serverMsg.task_done()
