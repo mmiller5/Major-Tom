@@ -2,28 +2,9 @@ from button1 import *
 import string
 import random
 import pygame
+from puzzle1 import Puzzle1
 
-class Puzzle1GC(object):
-    # load all possible button images
-    # modified from Lucas Peraza's Asteroid.py,
-    # https://github.com/LBPeraza/Pygame-Asteroids
-    @staticmethod
-    def init():
-        image = pygame.image.load('images/letters.png').convert_alpha()
-        rows = 4
-        cols = 7
-        width, height = image.get_size()
-        cellW = width / cols
-        cellH = height / rows
-        Puzzle1GC.answers = dict()
-        count = 0
-        for letter in string.ascii_uppercase:
-            row = count // cols
-            col = count % cols
-            subImage = image.subsurface((col * cellW, row * cellH, cellW, cellH))
-            Puzzle1GC.answers[letter] = subImage
-            count += 1
-    
+class Puzzle1GC(Puzzle1):
     def __init__(self, solution):
         self.solution = solution
         self.buttonLeft = 50
@@ -34,7 +15,6 @@ class Puzzle1GC(object):
         buttons = self.makeButtons()
         for button in buttons:
             self.buttons.add(button)
-        
     
     def makeButtons(self):
         buttons = []

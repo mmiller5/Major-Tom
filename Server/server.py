@@ -65,7 +65,6 @@ def serverThread(clientele, serverChannel):
 def serverMessage(msg):
     command = msg[1]
     print(command)
-    
     if (command == "puzzle1Response"):
         correct = msg[3]
         instruction = "puzzle1Reception"
