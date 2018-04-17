@@ -11,7 +11,7 @@ import threading
 from queue import Queue
 
 HOST = "" # put your IP address here if playing on multiple computers
-PORT = 50004
+PORT = 50005
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -32,15 +32,20 @@ def handleServerMsg(server, serverMsg):
       command = msg.split("\n")
 
 from Dino import *
+from puzzle1GC import *
 import random
 import pygame
 from pygamegame import PygameGame
 
 class Game(PygameGame):
     def init(self):
-        self.bgColor = (0, 0, 0)
+        self.bgColor = (255, 180, 180)
         self.player = "To be determined by server"
         Dino.init()
+        # going to want to do "if player == GC: initialize GC stuff" later
+        Puzzle1GC.init()
+        self.solution = "Z"
+        self.puzzle1 = None
         self.dinos = pygame.sprite.Group()
         self.gameStart = False
         
@@ -49,64 +54,47 @@ class Game(PygameGame):
         pass
         
     def mousePressed(self, x, y):
-        msg = "dinoMade %d %d\n" % (x, y)
-        self.dinos.add(Dino(x, y))
-        print ("sending: ", msg,)
-        self.server.send(msg.encode())
+        if self.gameStart == True:
+            msg = "dinoMade %d %d\n" % (x, y)
+            self.dinos.add(Dino(x, y))
+            print ("sending: ", msg,)
+            self.server.send(msg.encode())
         
     def timerFired(self):
         while (serverMsg.qsize() > 0):
             msg = serverMsg.get(False)
-            try:
-                print("received: ", msg, "\n")
-                msg = msg.split()
-                command = msg[0]
-                print(command)
-                
-                if (command == "myIDis"):
-                    myPID = msg[1]
-                    print("got my ID")
-                    self.player = myPID
-                
-                elif (command == "dinoMade"):
-                    x = int(msg[2])
-                    y = int(msg[3])
-                    self.dinos.add(Dino(x, y))
-        
-                elif (command == "newPlayer"):
-                    print("There's another player!")
-                '''
-                elif (command == "playerMoved"):
-                PID = msg[1]
-                dx = int(msg[2])
-                dy = int(msg[3])
-                self.otherStrangers[PID].move(dx, dy)
-        
-                elif (command == "playerTeleported"):
-                PID = msg[1]
+            #try:
+            print("received: ", msg, "\n")
+            msg = msg.split()
+            command = msg[0]
+            print(command)
+            
+            if (command == "myIDis"):
+                myPID = msg[1]
+                self.player = myPID
+                print("my ID is:", self.player)
+                if self.player == "GC":
+                    print("player is Ground Control")
+                    self.puzzle1 = Puzzle1GC(self.solution)
+            
+            elif (command == "dinoMade"):
                 x = int(msg[2])
                 y = int(msg[3])
-                self.otherStrangers[PID].teleport(x, y)
-                
-                elif (command == "givePosition"):
-                x = self.me.x
-                y = self.me.y
-                msg = "takePosition %d %d\n" % (x, y)
-                self.server.send(msg.encode())
-                
-                elif (command == "takePosition"):
-                PID = msg[1]
-                x = int(msg[2])
-                y = int(msg[3])
-                if not PID in self.otherStrangers:
-                    self.otherStrangers[PID] = Dot(PID, x, y)
-                '''
-            except:
-                print("failed")
+                self.dinos.add(Dino(x, y))
+    
+            elif (command == "newPlayer"):
+                self.gameStart = True
+                print("There's another player!")
+              
+            #except:
+              #  print("failed")
             serverMsg.task_done()
 
     def redrawAll(self, screen):
         self.dinos.draw(screen)
+        if self.player == "GC":
+            if self.puzzle1 != None:
+                self.puzzle1.draw(screen)
         
 serverMsg = Queue(100)
 threading.Thread(target = handleServerMsg, args = (server, serverMsg)).start()

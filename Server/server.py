@@ -9,7 +9,7 @@ import threading
 from queue import Queue
 
 HOST = "" # put your IP address here if playing on multiple computers
-PORT = 50004
+PORT = 50005
 BACKLOG = 2
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
@@ -56,7 +56,7 @@ playerNum = 0
 serverChannel = Queue(100)
 threading.Thread(target = serverThread, args = (clientele, serverChannel)).start()
 
-names = ["Major-Tom", "Ground-Control"]
+names = ["MT", "GC"]
 
 while True:
   client, address = server.accept()
