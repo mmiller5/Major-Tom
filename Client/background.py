@@ -3,7 +3,8 @@ import pygame
 class Background(pygame.sprite.Sprite):
     @staticmethod
     def init():
-        Background.image = pygame.image.load('images/MTBackground.png').convert_alpha()
+        Background.MTimage = pygame.image.load('images/MTBackground.png').convert_alpha()
+        Background.GCimage = pygame.image.load('images/GCBackground.png').convert_alpha()
     
     def __init__(self, x, y, image):
         super(Background, self).__init__()

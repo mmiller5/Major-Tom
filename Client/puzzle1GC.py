@@ -1,15 +1,17 @@
-from button1 import *
+#from button1 import *
 import string
 import random
 import pygame
 from puzzle1 import Puzzle1
+from button import *
 
 class Puzzle1GC(Puzzle1):
     def __init__(self, solution):
         self.solution = solution
-        self.buttonLeft = 50
-        self.buttonSize = 50
-        self.buttonTop = 300
+        self.buttonLeft = 625
+        self.buttonSize = 39
+        self.buttonTop = 269
+        self.buttonSpace = 5
         self.buttonLetters = set()
         self.buttons = pygame.sprite.Group()
         buttons = self.makeButtons()
@@ -22,13 +24,17 @@ class Puzzle1GC(Puzzle1):
         solutionPos = random.randint(0, buttonCount - 1)        
         self.buttonLetters.add(self.solution)
         for button in range(0, buttonCount):
-            x = self.buttonLeft + (button * self.buttonSize)
+            x = self.buttonLeft + (button * (self.buttonSize + self.buttonSpace))
             y = self.buttonTop
             if button == solutionPos:
-                buttons.append(Button1(x, y, Puzzle1GC.answers[self.solution], True))
+                image = pygame.transform.scale(Puzzle1GC.answers[self.solution],
+                                               (40, 40))
+                buttons.append(Button1(x, y, image, True))
             else:
                 answer = self.chooseAnswer()
-                buttons.append(Button1(x, y, Puzzle1GC.answers[answer], False))
+                image = pygame.transform.scale(Puzzle1GC.answers[answer],
+                                               (40, 40))
+                buttons.append(Button1(x, y, image, False))
                 self.buttonLetters.add(answer)
         return buttons
     
@@ -46,4 +52,8 @@ class Puzzle1GC(Puzzle1):
 
     def draw(self, screen):
         self.buttons.draw(screen)
-    
+
+class Button1(Button):
+    def __init__(self, x, y, image, isSolution):
+        super(Button1, self).__init__(x, y, image)
+        self.isSolution = isSolution

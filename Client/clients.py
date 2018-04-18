@@ -46,12 +46,19 @@ class Game(PygameGame):
         Dino.init()
         Puzzle1.init()
         Background.init()
-        self.background = Background(0, 0, Background.image)
+        self.background = None
         self.solution = "Z"
         self.puzzle1 = None
         self.dinos = pygame.sprite.Group()
         self.gameStart = False
         
+    def playerInit(self):
+        if self.player == "GC":
+            self.background = Background(0, 0, Background.GCimage)
+            self.puzzle1 = Puzzle1GC(self.solution)
+        else:
+            self.background = Background(0, 0, Background.MTimage)
+            self.puzzle1 = Puzzle1MT(self.solution)
 
     def keyPressed(self, code, mod):
         pass
@@ -85,12 +92,7 @@ class Game(PygameGame):
                 myPID = msg[1]
                 self.player = myPID
                 print("my ID is:", self.player)
-                if self.player == "GC":
-                    print("player is Ground Control")
-                    self.puzzle1 = Puzzle1GC(self.solution)
-                else:
-                    print("player is Major Tom")
-                    self.puzzle1 = Puzzle1MT(self.solution)
+                self.playerInit()
             
             elif (command == "dinoMade"):
                 x = int(msg[1])
