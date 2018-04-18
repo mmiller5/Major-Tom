@@ -22,6 +22,8 @@ class Puzzle1(object):
             subImage = image.subsurface((col * cellW, row * cellH, cellW, cellH))
             Puzzle1.answers[letter] = subImage
             count += 1
+        image = pygame.image.load('images/Puzzle1MT.png').convert_alpha()
+        Puzzle1.MTTerminal = image
 
     def __init__(self, solution):
         self.solution = solution

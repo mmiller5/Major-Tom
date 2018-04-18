@@ -32,6 +32,7 @@ def handleServerMsg(server, serverMsg):
       command = msg.split("\n")
 
 from Dino import *
+from background import *
 from puzzle1GC import *
 from puzzle1MT import *
 import random
@@ -43,8 +44,9 @@ class Game(PygameGame):
         self.bgColor = (180, 180, 180)
         self.player = "To be determined by server"
         Dino.init()
-        # going to want to do "if player == GC: initialize GC stuff" later
         Puzzle1.init()
+        Background.init()
+        self.background = Background(0, 0, Background.image)
         self.solution = "Z"
         self.puzzle1 = None
         self.dinos = pygame.sprite.Group()
@@ -114,8 +116,14 @@ class Game(PygameGame):
             #except:
               #  print("failed")
             serverMsg.task_done()
+        if self.gameStart:
+            if self.player == "GC":
+                pass
+            else:
+                self.puzzle1.update()
 
     def redrawAll(self, screen):
+        screen.blit(self.background.image, self.background.rect)
         self.dinos.draw(screen)
         #if self.player == "GC":
         if self.puzzle1 != None:
@@ -124,4 +132,4 @@ class Game(PygameGame):
 serverMsg = Queue(100)
 threading.Thread(target = handleServerMsg, args = (server, serverMsg)).start()
 
-Game(800, 500).run(server)
+Game(800, 600).run(server)
