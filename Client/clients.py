@@ -43,13 +43,11 @@ class Game(PygameGame):
     def init(self):
         self.bgColor = (180, 180, 180)
         self.player = "To be determined by server"
-        Dino.init()
         Puzzle1.init()
         Background.init()
         self.background = None
         self.solution = "Z"
         self.puzzle1 = None
-        self.dinos = pygame.sprite.Group()
         self.gameStart = False
         
     def playerInit(self):
@@ -73,10 +71,7 @@ class Game(PygameGame):
                     print ("sending: ", msg,)
                     self.server.send(msg.encode())
             else:
-                forServer = False
-                msg = "dinoMade %s %d %d\n" % (forServer, x, y)
-                print ("sending: ", msg,)
-                self.server.send(msg.encode())
+                pass
             
         
     def timerFired(self):
@@ -93,11 +88,6 @@ class Game(PygameGame):
                 self.player = myPID
                 print("my ID is:", self.player)
                 self.playerInit()
-            
-            elif (command == "dinoMade"):
-                x = int(msg[1])
-                y = int(msg[2])
-                self.dinos.add(Dino(x, y))
     
             elif (command == "newPlayer"):
                 self.gameStart = True
@@ -126,8 +116,6 @@ class Game(PygameGame):
 
     def redrawAll(self, screen):
         screen.blit(self.background.image, self.background.rect)
-        self.dinos.draw(screen)
-        #if self.player == "GC":
         if self.puzzle1 != None:
             self.puzzle1.draw(screen)
         
