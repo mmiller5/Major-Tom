@@ -9,6 +9,7 @@ import threading
 from queue import Queue
 
 from puzzle1Generate import *
+from puzzle2Logic import *
 
 HOST = "" # put your IP address here if playing on multiple computers
 PORT = 50005
@@ -34,11 +35,6 @@ def handleClient(client, serverChannel, cID, clientele):
         except:
             # we failed
             return
-
-
-
-
-
 
 def serverThread(clientele, serverChannel):
     while True:
@@ -80,7 +76,7 @@ def serverMessage(msg):
                 clientele[cID].send(sendMsg.encode())
                 print("> sent to %s:" % cID, sendMsg[:-1])
     
-    elif (command == "dinoMade"):
+    elif (command == "puzzle2MoveMade"):
         pass
 
     elif (command == "newPlayer"):

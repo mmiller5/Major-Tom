@@ -35,6 +35,7 @@ from Dino import *
 from background import *
 from puzzle1GC import *
 from puzzle1MT import *
+from puzzle2 import *
 import random
 import pygame
 from pygamegame import PygameGame
@@ -44,10 +45,12 @@ class Game(PygameGame):
         self.bgColor = (180, 180, 180)
         self.player = "To be determined by server"
         Puzzle1.init()
+        Puzzle2.init()
         Background.init()
         self.background = None
         self.solution = "Z"
         self.puzzle1 = None
+        self.puzzle2 = Puzzle2()
         self.gameStart = False
         
     def playerInit(self):
@@ -71,7 +74,8 @@ class Game(PygameGame):
                     print ("sending: ", msg,)
                     self.server.send(msg.encode())
             else:
-                pass
+                self.puzzle2.tileClick(x, y)
+                self.puzzle2.update()
             
         
     def timerFired(self):
@@ -118,6 +122,7 @@ class Game(PygameGame):
         screen.blit(self.background.image, self.background.rect)
         if self.puzzle1 != None:
             self.puzzle1.draw(screen)
+        self.puzzle2.draw(screen)
         
 serverMsg = Queue(100)
 threading.Thread(target = handleServerMsg, args = (server, serverMsg)).start()
