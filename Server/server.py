@@ -77,7 +77,35 @@ def serverMessage(msg):
                 print("> sent to %s:" % cID, sendMsg[:-1])
     
     elif (command == "puzzle2MoveMade"):
-        pass
+        move = msg[3:] 
+        instruction = "puzzle2Reception"
+        legalMove = gameBoard.isLegalMove(move)
+        if legalMove:
+            legal = "True"
+            gameBoard.makeMove(move, "Maxie")
+            moveToMake = "%s" % move
+            row = int(move[0])
+            col = int(move[1])
+            newRow = int(move[2])
+            newCol = int(move[3])
+            for cID in clientele:
+                sendMsg = instruction + " " + legal + " %d %d %d %d\n" % (row, col, newRow, newCol)
+                clientele[cID].send(sendMsg.encode())
+                print("> sent to %s:" % cID, sendMsg[:-1])
+            # Minnie make move
+            #moveToMake = 
+            '''
+            for cID in clientele:
+                sendMsg = instruction + " " + legal + " " + moveToMake + "\n"
+                clientele[cID].send(sendMsg.encode())
+                print("> sent to %s:" % cID, sendMsg[:-1])
+            '''
+        else:
+            legal = "False"
+            for cID in clientele:
+                sendMsg = instruction + " " + legal + "\n"
+                clientele[cID].send(sendMsg.encode())
+                print("> sent to %s:" % cID, sendMsg[:-1])
 
     elif (command == "newPlayer"):
         pass
@@ -112,3 +140,11 @@ while True:
     threading.Thread(target = handleClient, args = 
                             (client ,serverChannel, myID, clientele)).start()
     playerNum += 1
+
+def serverInit():
+    gameBoard = Board()
+
+
+
+
+

@@ -32,6 +32,7 @@ class Puzzle2(object):
         self.x = 200
         self.y = 200
         self.tileSize = 30
+        Button2.init(self.x, self.y, self.tileSize)
         tiles = self.makeTiles()
         self.tiles = pygame.sprite.Group()
         for tile in tiles:
@@ -54,27 +55,29 @@ class Puzzle2(object):
     
     def makeMove(self, move):
         board = self.board
-        row = move[0]
-        col = move[1]
-        newRow = move[2]
-        newCol = move[3]
-        isJump = move[4]
-        #board[row][col], board[newRow][newCol] = "1", board[row][col]
+        row = int(move[0])
+        col = int(move[1])
+        newRow = int(move[2])
+        newCol = int(move[3])
+        if abs(row - newRow) == 2:
+            isJump = True
+        else:
+            isJump = False
         for tile in self.tiles:
-            if tile.x == col and \
-               tile.y == row:
+            if tile.col == col and \
+               tile.row == row:
                 tile1 = tile
-            elif tile.x == newCol and \
-                 tile.y == newRow:
+            elif tile.col == newCol and \
+                 tile.row == newRow:
                 tile2 = tile
-        tile1.x, tile2.x = tile2.x, tile1.x
-        tile1.y, tile2.y = tile2.y, tile1.y
+        tile1.col, tile2.col = tile2.col, tile1.col
+        tile1.row, tile2.row = tile2.row, tile1.row
         if isJump:
-            jumpedRow = move[5]
-            jumpedCol = move[6]
+            jumpedRow = int(move[5])
+            jumpedCol = int(move[6])
             for tile in self.tiles:
-                if tile.x == jumpedCol and \
-                tile.y == jumpedRow:
+                if tile.col == jumpedCol and \
+                   tile.row == jumpedRow:
                     tile3 = tile
             tile3.image = pygame.transform.scale(Puzzle2.checkers[1],
                                                   (self.tileSize, self.tileSize))
@@ -105,16 +108,29 @@ class Puzzle2(object):
     def tileClick(self, x, y):
         for tile in self.tiles:
             if tile.rect.collidepoint(x, y):
-                if self.clickedTile == None or \
-                   self.clickedTile == tile:
+                if self.clickedTile == None:
                     self.clickedTile = tile
+                    return None
+                elif self.clickedTile == tile:
+                    self.clickedTile = None
+                    return None
                 else:
                     tile1 = self.clickedTile
                     tile2 = tile
+                    self.clickedTile = None
+                    '''
+                    row = (tile1.y - self.y) / self.tileSize
+                    col = (tile1.x - self.x) / self.tileSize
+                    newRow = (tile2.y - self.y) / self.tileSize
+                    newCol = (tile2.x - self.x) / self.tileSize
+                    '''
+                    return (tile1.row, tile1.col, tile2.row, tile2.col)
+                    '''
                     # placeholder movement
                     move = [tile1.y, tile1.x, tile2.y, tile2.x, False]
                     self.makeMove(move)
                     self.clickedTile = None
+                    '''
     
     def update(self):
         self.tiles.update()
@@ -124,9 +140,16 @@ class Puzzle2(object):
         self.highlight.draw(screen)
 
 class Button2(Button):
+    def init(x, y, size):
+        Button2.startx = x
+        Button2.starty = y
+        Button2.size = size
+        
     def __init__(self, x, y, image):
         super(Button2, self).__init__(x, y, image)
         self.isClicked = False
+        self.row = (self.y - Button2.starty) / Button2.size
+        self.col = (self.x - Button2.startx) / Button2.size
     
     # taken from Lucas Peraza's GameObject.py,
     # https://github.com/LBPeraza/Pygame-Asteroids
@@ -137,6 +160,8 @@ class Button2(Button):
         self.rect = pygame.Rect(self.x - w / 2, self.y - h / 2, w, h)
     
     def update(self):
+        self.x = Button2.startx + (self.col * Button2.size)
+        self.y = Button2.starty + (self.row * Button2.size)
         self.updateRect()
     
 class Highlight(pygame.sprite.Sprite):

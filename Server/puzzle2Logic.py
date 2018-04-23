@@ -102,13 +102,7 @@ def MinnieMoveAlphaBeta(board, depth, alpha, beta):
         return (bestMove, bestScore)
         
 class Board(object):
-    def init():
-        # load images
-        pass
-
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+    def __init__(self):
         self.whiteLeft = 4
         self.blackLeft = 4
         self.board = self.makeBoard()
@@ -180,11 +174,15 @@ class Board(object):
         
     def makeMove(self, move, player):
         board = self.board
-        row = move[0]
-        col = move[1]
-        newRow = move[2]
-        newCol = move[3]
-        isJump = move[4]
+        row = int(move[0])
+        col = int(move[1])
+        newRow = int(move[2])
+        newCol = int(move[3])
+        if abs(row - newRow) == 2:
+            isJump = True
+        else:
+            isJump = False
+        #isJump = move[4]
         board[row][col], board[newRow][newCol] = "1", board[row][col]
         if isJump:
             jumpedRow = move[5]
@@ -225,10 +223,10 @@ class Board(object):
     def isLegalMove(self, move):
         board = self.board
         # assume starting position is legal
-        move[0] = row
-        move[1] = col
-        move[2] = newRow
-        move[3] = newCol
+        row = int(move[0])
+        col = int(move[1])
+        newRow = int(move[2])
+        newCol = int(move[3])
         if row - newRow == 1 and \
            abs(col - newCol) == 1 and \
            board[newRow][newCol] == "1":
@@ -237,15 +235,15 @@ class Board(object):
         elif row - newRow == 2 and \
              abs(col - newCol) == 2 and \
              board[newRow][newCol] == "1":
-            jumpedRow = (newRow + row) / 2
-            jumpedCol = (newCol + col) / 2
+            jumpedRow = (newRow + row) // 2
+            jumpedCol = (newCol + col) // 2
             if board[jumpedRow][jumpedCol] == "W":
                 board[row][col], board[newRow][newCol] = "1", "B"
                 board[jumpedRow][jumpedCol] = "1"
                 return True
         return False
     
-gameBoard = Board(0, 0)
+gameBoard = Board()
     
     
     

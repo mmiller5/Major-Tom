@@ -31,7 +31,6 @@ def handleServerMsg(server, serverMsg):
       serverMsg.put(readyMsg)
       command = msg.split("\n")
 
-from Dino import *
 from background import *
 from puzzle1GC import *
 from puzzle1MT import *
@@ -74,8 +73,18 @@ class Game(PygameGame):
                     print ("sending: ", msg,)
                     self.server.send(msg.encode())
             else:
-                self.puzzle2.tileClick(x, y)
+                move = self.puzzle2.tileClick(x, y)
                 self.puzzle2.update()
+                if move != None:
+                    forServer = True
+                    row = move[0]
+                    col = move[1]
+                    newRow = move[2]
+                    newCol = move[3]
+                    msg = "puzzle2MoveMade %s %d %d %d %d\n" % (forServer, row, col, newRow, newCol)
+                    print ("sending: ", msg,)
+                    self.server.send(msg.encode())
+                
             
         
     def timerFired(self):
@@ -108,7 +117,16 @@ class Game(PygameGame):
                 else:
                     # impose penalty
                     pass
-
+                    
+            elif (command == "puzzle2Reception"):
+                legal = msg[1]
+                if legal == "True":
+                    move = msg[2:]
+                    self.puzzle2.makeMove(move)
+                    self.puzzle2.update()
+                else:
+                    # impose penalty
+                    pass
             #except:
               #  print("failed")
             serverMsg.task_done()
