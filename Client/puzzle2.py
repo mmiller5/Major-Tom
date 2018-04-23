@@ -1,3 +1,5 @@
+# Creates the checkerboard puzzle and handles client-side checker info
+
 import string
 import random
 import pygame
@@ -26,9 +28,8 @@ class Puzzle2(object):
         image = pygame.image.load('images/highlight.png').convert_alpha()
         Puzzle2.highlight = image
     
-    def __init__(self):#, firstMove):
+    def __init__(self):
         self.board = self.makeBoard()
-        #makeMove(firstMove)
         self.x = 200
         self.y = 200
         self.tileSize = 30
@@ -105,39 +106,11 @@ class Puzzle2(object):
                 tiles.append(tile)
         return tiles
     
-    def tileClick(self, x, y):
-        for tile in self.tiles:
-            if tile.rect.collidepoint(x, y):
-                if self.clickedTile == None:
-                    self.clickedTile = tile
-                    return None
-                elif self.clickedTile == tile:
-                    self.clickedTile = None
-                    return None
-                else:
-                    tile1 = self.clickedTile
-                    tile2 = tile
-                    self.clickedTile = None
-                    '''
-                    row = (tile1.y - self.y) / self.tileSize
-                    col = (tile1.x - self.x) / self.tileSize
-                    newRow = (tile2.y - self.y) / self.tileSize
-                    newCol = (tile2.x - self.x) / self.tileSize
-                    '''
-                    return (tile1.row, tile1.col, tile2.row, tile2.col)
-                    '''
-                    # placeholder movement
-                    move = [tile1.y, tile1.x, tile2.y, tile2.x, False]
-                    self.makeMove(move)
-                    self.clickedTile = None
-                    '''
-    
     def update(self):
         self.tiles.update()
     
     def draw(self, screen):
         self.tiles.draw(screen)
-        self.highlight.draw(screen)
 
 class Button2(Button):
     def init(x, y, size):
@@ -163,16 +136,3 @@ class Button2(Button):
         self.x = Button2.startx + (self.col * Button2.size)
         self.y = Button2.starty + (self.row * Button2.size)
         self.updateRect()
-    
-class Highlight(pygame.sprite.Sprite):
-    def init(self, x, y, image):
-        super(Highlight, self).__init__()
-        
-        
-        
-        
-        
-        
-        
-        
-        

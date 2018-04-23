@@ -1,7 +1,5 @@
-#from button1 import *
-import string
-import random
-import pygame
+# Specific class for what Ground Control receives of the scanner puzzle
+
 from puzzle1 import Puzzle1
 from button import *
 

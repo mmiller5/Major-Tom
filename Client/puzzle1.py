@@ -1,3 +1,5 @@
+# Generic puzzle 1 that stores image info and solution
+
 import string
 import random
 import pygame

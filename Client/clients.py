@@ -1,3 +1,5 @@
+# Opens the interface for each client. Sends messages to and receives messages
+# from the server
 '''
 Sockets part created by Rohan Varma, adapted by Kyle Chin
 https://drive.google.com/drive/folders/0B3Jab-H-9UIiZ2pXMExjdDV1dW8
@@ -34,7 +36,8 @@ def handleServerMsg(server, serverMsg):
 from background import *
 from puzzle1GC import *
 from puzzle1MT import *
-from puzzle2 import *
+from puzzle2GC import *
+from puzzle2MT import *
 import random
 import pygame
 from pygamegame import PygameGame
@@ -49,16 +52,18 @@ class Game(PygameGame):
         self.background = None
         self.solution = "Z"
         self.puzzle1 = None
-        self.puzzle2 = Puzzle2()
+        self.puzzle2 = None
         self.gameStart = False
         
     def playerInit(self):
         if self.player == "GC":
             self.background = Background(0, 0, Background.GCimage)
             self.puzzle1 = Puzzle1GC(self.solution)
+            self.puzzle2 = Puzzle2GC()
         else:
             self.background = Background(0, 0, Background.MTimage)
             self.puzzle1 = Puzzle1MT(self.solution)
+            self.puzzle2 = Puzzle2MT()
 
     def keyPressed(self, code, mod):
         pass
@@ -72,9 +77,7 @@ class Game(PygameGame):
                     msg = "puzzle1Response %s %s\n" % (forServer, puzzle1Correct)
                     print ("sending: ", msg,)
                     self.server.send(msg.encode())
-            else:
                 move = self.puzzle2.tileClick(x, y)
-                self.puzzle2.update()
                 if move != None:
                     forServer = True
                     row = move[0]
@@ -84,9 +87,9 @@ class Game(PygameGame):
                     msg = "puzzle2MoveMade %s %d %d %d %d\n" % (forServer, row, col, newRow, newCol)
                     print ("sending: ", msg,)
                     self.server.send(msg.encode())
-                
-            
-        
+            else:
+                pass
+
     def timerFired(self):
         while (serverMsg.qsize() > 0):
             msg = serverMsg.get(False)
@@ -105,7 +108,7 @@ class Game(PygameGame):
             elif (command == "newPlayer"):
                 self.gameStart = True
                 print("There's another player!")
-            
+
             elif (command == "puzzle1Reception"):
                 correct = msg[1]
                 if correct == "True":
@@ -117,7 +120,7 @@ class Game(PygameGame):
                 else:
                     # impose penalty
                     pass
-                    
+
             elif (command == "puzzle2Reception"):
                 legal = msg[1]
                 if legal == "True":
@@ -140,7 +143,8 @@ class Game(PygameGame):
         screen.blit(self.background.image, self.background.rect)
         if self.puzzle1 != None:
             self.puzzle1.draw(screen)
-        self.puzzle2.draw(screen)
+        if self.puzzle2 != None:
+            self.puzzle2.draw(screen)
         
 serverMsg = Queue(100)
 threading.Thread(target = handleServerMsg, args = (server, serverMsg)).start()

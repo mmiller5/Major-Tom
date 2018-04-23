@@ -1,3 +1,5 @@
+# Generic button class used for all clicking interaction
+
 import pygame
 
 class Button(pygame.sprite.Sprite):

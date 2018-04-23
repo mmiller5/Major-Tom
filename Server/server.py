@@ -1,3 +1,5 @@
+# Runs the server for the game. Sends messages to and receives messages from
+# the clients
 '''
 created by Rohan Varma, adapted by Kyle Chin
 https://drive.google.com/drive/folders/0B3Jab-H-9UIiZ2pXMExjdDV1dW8
