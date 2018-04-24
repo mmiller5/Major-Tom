@@ -7,8 +7,9 @@ class Puzzle2GC(Puzzle2):
         super().__init__()
         self.highlightImage = pygame.transform.scale(Puzzle2.highlight,
                                                   (self.tileSize, self.tileSize))
-
         self.highlight = pygame.sprite.GroupSingle()
+        timer = Timer(315, 303, Timer.image, 3000)
+        self.timer = pygame.sprite.GroupSingle(timer)
         
     def makeTiles(self):
         tiles = []
@@ -53,6 +54,7 @@ class Puzzle2GC(Puzzle2):
     def draw(self, screen):
         self.tiles.draw(screen)
         self.highlight.draw(screen)
+        self.timer.draw(screen)
 
 class Highlight(pygame.sprite.Sprite):
     def __init__(self, x, y, image):

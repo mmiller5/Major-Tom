@@ -4,6 +4,7 @@ import string
 import random
 import pygame
 from button import *
+from timer import *
 
 class Puzzle2(object):
     # load all possible button images
@@ -113,6 +114,7 @@ class Puzzle2(object):
         self.tiles.draw(screen)
 
 class Button2(Button):
+    @staticmethod
     def init(x, y, size):
         Button2.startx = x
         Button2.starty = y

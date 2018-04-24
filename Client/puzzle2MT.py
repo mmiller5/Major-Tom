@@ -2,7 +2,12 @@
 
 from puzzle2 import *
 
-class Puzzle2MT(Puzzle2):    
+class Puzzle2MT(Puzzle2):   
+    def __init__(self):
+        super().__init__()
+        timer = Timer(315, 300, Timer.image, 3000)
+        self.timer = pygame.sprite.GroupSingle(timer)
+    
     def makeTiles(self):
         tiles = []
         tileCount = 64
@@ -23,3 +28,7 @@ class Puzzle2MT(Puzzle2):
                 tile = Button2(x, y, image)
                 tiles.append(tile)
         return tiles
+    
+    def draw(self, screen):
+        self.tiles.draw(screen)
+        self.timer.draw(screen)

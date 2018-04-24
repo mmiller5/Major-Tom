@@ -16,6 +16,8 @@ class Puzzle1GC(Puzzle1):
         buttons = self.makeButtons()
         for button in buttons:
             self.buttons.add(button)
+        timer = Timer(606, 309, Timer.image, 1000)
+        self.timer = pygame.sprite.GroupSingle(timer)
     
     def makeButtons(self):
         buttons = []
@@ -51,6 +53,7 @@ class Puzzle1GC(Puzzle1):
 
     def draw(self, screen):
         self.buttons.draw(screen)
+        self.timer.draw(screen)
 
 class Button1(Button):
     def __init__(self, x, y, image, isSolution):

@@ -3,6 +3,7 @@
 import string
 import random
 import pygame
+from timer import *
 
 class Puzzle1(object):
     # load all possible button images

@@ -16,6 +16,8 @@ class Puzzle1MT(Puzzle1):
         self.terminalImage = Puzzle1.MTTerminal
         terminal = Terminal(800, 600, self.terminalImage)
         self.terminalGroup = pygame.sprite.GroupSingle(terminal)
+        timer = Timer(586, 446, Timer.image, 1000)
+        self.timer = pygame.sprite.GroupSingle(timer)
 
     def update(self):
         self.letterGroup.update()
@@ -23,6 +25,7 @@ class Puzzle1MT(Puzzle1):
     def draw(self, screen):
         self.letterGroup.draw(screen)
         self.terminalGroup.draw(screen)
+        self.timer.draw(screen)
 
 
 class Letter(pygame.sprite.Sprite):

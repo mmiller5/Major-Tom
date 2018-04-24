@@ -85,7 +85,15 @@ def serverMessage(msg):
         print(move)
         instruction = "puzzle2Reception"
         legalMove = gameBoard.isLegalMove(move)
-        if legalMove:
+        # tests if won game
+        if legalMove and int(move[2]) == 0:
+            instruction = "puzzle2Won"
+            gameBoard.__init__()
+            for cID in clientele:
+                sendMsg = instruction + "\n"
+                clientele[cID].send(sendMsg.encode())
+                print("> sent to %s:" % cID, sendMsg[:-1])
+        elif legalMove:
             legal = "True"
             row = int(move[0])
             col = int(move[1])
@@ -95,7 +103,6 @@ def serverMessage(msg):
                 sendMsg = instruction + " " + legal + " %d %d %d %d\n" % (row, col, newRow, newCol)
                 clientele[cID].send(sendMsg.encode())
                 print("> sent to %s:" % cID, sendMsg[:-1])
-            #'''
             # Minnie make move
             moveToMake = getMove(gameBoard, 7)
             row = int(moveToMake[0])
@@ -107,14 +114,6 @@ def serverMessage(msg):
                 sendMsg = instruction + " " + legal + " %d %d %d %d\n" % (row, col, newRow, newCol)
                 clientele[cID].send(sendMsg.encode())
                 print("> sent to %s:" % cID, sendMsg[:-1])
-            #'''
-            print(gameBoard.whiteLeft, gameBoard.blackLeft)
-            '''
-            for cID in clientele:
-                sendMsg = instruction + " " + legal + " " + moveToMake + "\n"
-                clientele[cID].send(sendMsg.encode())
-                print("> sent to %s:" % cID, sendMsg[:-1])
-            '''
         else:
             legal = "False"
             for cID in clientele:
@@ -127,10 +126,6 @@ def serverMessage(msg):
     
     elif (command == "puzzle1Solution"):
         pass
-
-
-
-
 
 clientele = dict()
 playerNum = 0

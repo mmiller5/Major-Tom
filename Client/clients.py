@@ -34,6 +34,7 @@ def handleServerMsg(server, serverMsg):
       command = msg.split("\n")
 
 from background import *
+from timer import *
 from puzzle1GC import *
 from puzzle1MT import *
 from puzzle2GC import *
@@ -49,6 +50,7 @@ class Game(PygameGame):
         Puzzle1.init()
         Puzzle2.init()
         Background.init()
+        Timer.init()
         self.background = None
         self.solution = "Z"
         self.puzzle1 = None
@@ -125,7 +127,7 @@ class Game(PygameGame):
                         self.puzzle1 = Puzzle1MT(self.solution)
                 else:
                     # impose penalty
-                    pass
+                    self.puzzle1.timer.sprite.penalty(35)
 
             elif (command == "puzzle2Reception"):
                 legal = msg[1]
@@ -135,7 +137,13 @@ class Game(PygameGame):
                     self.puzzle2.update()
                 else:
                     # impose penalty
-                    pass
+                    self.puzzle2.timer.sprite.penalty(10)
+
+            elif (command == "puzzle2Won"):
+                if self.player == "GC":
+                    self.puzzle2 = Puzzle2GC()
+                else:
+                    self.puzzle2 = Puzzle2MT()
             #except:
               #  print("failed")
             serverMsg.task_done()
@@ -144,6 +152,8 @@ class Game(PygameGame):
                 pass
             else:
                 self.puzzle1.update()
+            self.puzzle1.timer.update()
+            self.puzzle2.timer.update()
 
     def redrawAll(self, screen):
         screen.blit(self.background.image, self.background.rect)

@@ -149,5 +149,5 @@ class Board(object):
                 self.whiteLeft -= 1
                 return True
         return False
-    
+        
 gameBoard = Board()
