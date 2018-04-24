@@ -12,9 +12,10 @@ from queue import Queue
 
 from puzzle1Generate import *
 from puzzle2Logic import *
+from puzzle2AI import *
 
 HOST = "" # put your IP address here if playing on multiple computers
-PORT = 50005
+PORT = 50004
 BACKLOG = 2
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
@@ -80,12 +81,12 @@ def serverMessage(msg):
     
     elif (command == "puzzle2MoveMade"):
         move = msg[3:] 
+        print(msg)
+        print(move)
         instruction = "puzzle2Reception"
         legalMove = gameBoard.isLegalMove(move)
         if legalMove:
             legal = "True"
-            gameBoard.makeMove(move, "Maxie")
-            moveToMake = "%s" % move
             row = int(move[0])
             col = int(move[1])
             newRow = int(move[2])
@@ -94,8 +95,20 @@ def serverMessage(msg):
                 sendMsg = instruction + " " + legal + " %d %d %d %d\n" % (row, col, newRow, newCol)
                 clientele[cID].send(sendMsg.encode())
                 print("> sent to %s:" % cID, sendMsg[:-1])
+            #'''
             # Minnie make move
-            #moveToMake = 
+            moveToMake = getMove(gameBoard, 7)
+            row = int(moveToMake[0])
+            col = int(moveToMake[1])
+            newRow = int(moveToMake[2])
+            newCol = int(moveToMake[3])
+            gameBoard.makeMove(moveToMake, "Minnie")
+            for cID in clientele:
+                sendMsg = instruction + " " + legal + " %d %d %d %d\n" % (row, col, newRow, newCol)
+                clientele[cID].send(sendMsg.encode())
+                print("> sent to %s:" % cID, sendMsg[:-1])
+            #'''
+            print(gameBoard.whiteLeft, gameBoard.blackLeft)
             '''
             for cID in clientele:
                 sendMsg = instruction + " " + legal + " " + moveToMake + "\n"

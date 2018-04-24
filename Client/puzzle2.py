@@ -74,8 +74,8 @@ class Puzzle2(object):
         tile1.col, tile2.col = tile2.col, tile1.col
         tile1.row, tile2.row = tile2.row, tile1.row
         if isJump:
-            jumpedRow = int(move[5])
-            jumpedCol = int(move[6])
+            jumpedRow = (newRow + row) // 2
+            jumpedCol = (newCol + col) // 2
             for tile in self.tiles:
                 if tile.col == jumpedCol and \
                    tile.row == jumpedRow:

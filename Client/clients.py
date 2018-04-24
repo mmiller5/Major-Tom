@@ -13,7 +13,7 @@ import threading
 from queue import Queue
 
 HOST = "" # put your IP address here if playing on multiple computers
-PORT = 50005
+PORT = 50004
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
