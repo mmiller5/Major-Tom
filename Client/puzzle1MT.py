@@ -1,6 +1,6 @@
 # Specific class for what Major Tom receives of the scanner puzzle
 
-from puzzle1 import Puzzle1
+from puzzle1 import *
 
 class Puzzle1MT(Puzzle1):
     

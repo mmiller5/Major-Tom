@@ -71,22 +71,28 @@ class Game(PygameGame):
     def mousePressed(self, x, y):
         if self.gameStart == True:
             if self.player == "GC":
-                puzzle1Correct = self.puzzle1.buttonClick(x, y)
-                if puzzle1Correct != None:
-                    forServer = True
-                    msg = "puzzle1Response %s %s\n" % (forServer, puzzle1Correct)
-                    print ("sending: ", msg,)
-                    self.server.send(msg.encode())
-                move = self.puzzle2.tileClick(x, y)
-                if move != None:
-                    forServer = True
-                    row = move[0]
-                    col = move[1]
-                    newRow = move[2]
-                    newCol = move[3]
-                    msg = "puzzle2MoveMade %s %d %d %d %d\n" % (forServer, row, col, newRow, newCol)
-                    print ("sending: ", msg,)
-                    self.server.send(msg.encode())
+                if True: # find dimensions later
+                    puzzle1Correct = self.puzzle1.buttonClick(x, y)
+                    if puzzle1Correct != None:
+                        forServer = True
+                        msg = "puzzle1Response %s %s\n" % (forServer, puzzle1Correct)
+                        print ("sending: ", msg,)
+                        self.server.send(msg.encode())
+                if self.puzzle2.x <= x <= self.puzzle2.x + 8 * self.puzzle2.tileSize and \
+                   self.puzzle2.y <= y <= self.puzzle2.y + 8 * self.puzzle2.tileSize:
+                    move = self.puzzle2.tileClick(x, y)
+                    if move != None:
+                        forServer = True
+                        row = move[0]
+                        col = move[1]
+                        newRow = move[2]
+                        newCol = move[3]
+                        msg = "puzzle2MoveMade %s %d %d %d %d\n" % (forServer, row, col, newRow, newCol)
+                        print ("sending: ", msg,)
+                        self.server.send(msg.encode())
+                elif self.puzzle2.highlight.sprite != None:
+                    self.puzzle2.clickedTile = None
+                    self.puzzle2.highlight.sprite.kill()
             else:
                 pass
 

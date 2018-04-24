@@ -5,8 +5,11 @@ from puzzle2 import *
 class Puzzle2GC(Puzzle2):    
     def __init__(self):
         super().__init__()
-        self.highlight = pygame.sprite.GroupSingle()
+        self.highlightImage = pygame.transform.scale(Puzzle2.highlight,
+                                                  (self.tileSize, self.tileSize))
 
+        self.highlight = pygame.sprite.GroupSingle()
+        
     def makeTiles(self):
         tiles = []
         tileCount = 64
@@ -33,14 +36,18 @@ class Puzzle2GC(Puzzle2):
             if tile.rect.collidepoint(x, y):
                 if self.clickedTile == None:
                     self.clickedTile = tile
+                    highlight = Highlight(tile.x, tile.y, self.highlightImage)
+                    self.highlight.add(highlight)
                     return None
                 elif self.clickedTile == tile:
                     self.clickedTile = None
+                    self.highlight.sprite.kill()
                     return None
                 else:
                     tile1 = self.clickedTile
                     tile2 = tile
                     self.clickedTile = None
+                    self.highlight.sprite.kill()
                     return (tile1.row, tile1.col, tile2.row, tile2.col)
     
     def draw(self, screen):
@@ -48,5 +55,17 @@ class Puzzle2GC(Puzzle2):
         self.highlight.draw(screen)
 
 class Highlight(pygame.sprite.Sprite):
-    def init(self, x, y, image):
+    def __init__(self, x, y, image):
         super(Highlight, self).__init__()
+        self.x = x
+        self.y = y
+        self.image = image
+        self.updateRect()
+        
+    # taken from Lucas Peraza's GameObject.py,
+    # https://github.com/LBPeraza/Pygame-Asteroids
+    def updateRect(self):
+        # update the object's rect attribute with the new x,y coordinates
+        w, h = self.image.get_size()
+        self.width, self.height = w, h
+        self.rect = pygame.Rect(self.x, self.y, w, h)

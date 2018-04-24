@@ -30,8 +30,8 @@ class Puzzle2(object):
     
     def __init__(self):
         self.board = self.makeBoard()
-        self.x = 200
-        self.y = 200
+        self.x = 280
+        self.y = 50
         self.tileSize = 30
         Button2.init(self.x, self.y, self.tileSize)
         tiles = self.makeTiles()
@@ -130,7 +130,7 @@ class Button2(Button):
         # update the object's rect attribute with the new x,y coordinates
         w, h = self.image.get_size()
         self.width, self.height = w, h
-        self.rect = pygame.Rect(self.x - w / 2, self.y - h / 2, w, h)
+        self.rect = pygame.Rect(self.x, self.y, w, h)
     
     def update(self):
         self.x = Button2.startx + (self.col * Button2.size)

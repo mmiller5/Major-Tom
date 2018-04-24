@@ -1,7 +1,8 @@
 # Specific class for what Ground Control receives of the scanner puzzle
 
-from puzzle1 import Puzzle1
+from puzzle1 import *
 from button import *
+
 
 class Puzzle1GC(Puzzle1):
     def __init__(self, solution):
