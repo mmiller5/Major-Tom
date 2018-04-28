@@ -33,8 +33,13 @@ class Timer(pygame.sprite.Sprite):
         self.updateRect()
     
     def penalty(self, percent):
-        amount = self.totalTime // (100 - percent)
+        amount = int(self.totalTime * (percent / 100))
         self.elapsedTime = min(self.elapsedTime + amount, self.totalTime)
     
     def reset(self):
         self.elapsedTime = 0
+
+    def timerDone(self):
+        if self.elapsedTime == self.totalTime:
+            return True
+        return False

@@ -7,7 +7,6 @@ modified by me
 from puzzle2Logic import *
 
 def MaxieMoveAlphaBeta(board, depth, alpha, beta):
-    #print("   "*(5-depth))
     assert(alpha < beta)
     if False:#board.isGameOver():
         return (None, 100) if board.won("Maxie") else (None, -100)
@@ -31,7 +30,6 @@ def MaxieMoveAlphaBeta(board, depth, alpha, beta):
 # same as Maxie, but maximizes Minnie's score by minimizing
 # the board score
 def MinnieMoveAlphaBeta(board, depth, alpha, beta):
-    #print("   "*(5-depth))
     assert(alpha < beta)
     if False:#board.isGameOver():
         return (None, -100) if board.won("Minnie") else (None, 100)

@@ -46,13 +46,11 @@ class Board(object):
                            row + 2 < len(board) and \
                            board[row + 1][col - 1] == "B" and \
                            board[row + 2][col - 2] == "1":
-                            #print("jump move")
                             moves += [(row, col, row + 2, col - 2, True, row + 1, col - 1)]
                         if col + 2 < len(board[row]) and \
                            row + 2 < len(board) and \
                            board[row + 1][col + 1] == "B" and \
                            board[row + 2][col + 2] == "1":
-                            #print("jump move")
                             moves += [(row, col, row + 2, col + 2, True, row + 1, col + 1)]
         if player == "Maxie":
             for row in range(1, len(board)):
@@ -68,13 +66,11 @@ class Board(object):
                            row - 2 >= 0 and \
                            board[row - 1][col - 1] == "W" and \
                            board[row - 2][col - 2] == "1":
-                            #print("jump move")
                             moves += [(row, col, row - 2, col - 2, True, row - 1, col - 1)]
                         if col + 2 < len(board[row]) and \
                            row - 2 >= 0 and \
                            board[row - 1][col + 1] == "W" and \
                            board[row - 2][col + 2] == "1":
-                            #print("jump move")
                             moves += [(row, col, row - 2, col + 2, True, row - 1, col + 1)]
         #print(moves)
         return moves

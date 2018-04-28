@@ -34,11 +34,7 @@ def handleServerMsg(server, serverMsg):
       command = msg.split("\n")
 
 from background import *
-from timer import *
-from puzzle1GC import *
-from puzzle1MT import *
-from puzzle2GC import *
-from puzzle2MT import *
+from gameScreen import *
 import random
 import pygame
 from pygamegame import PygameGame
@@ -47,56 +43,22 @@ class Game(PygameGame):
     def init(self):
         self.bgColor = (180, 180, 180)
         self.player = "To be determined by server"
-        Puzzle1.init()
-        Puzzle2.init()
         Background.init()
-        Timer.init()
+        GameMode.init()
         self.background = None
-        self.solution = "Z"
-        self.puzzle1 = None
-        self.puzzle2 = None
+        self.mode = "Game"
+        self.game = None
         self.gameStart = False
-        
-    def playerInit(self):
-        if self.player == "GC":
-            self.background = Background(0, 0, Background.GCimage)
-            self.puzzle1 = Puzzle1GC(self.solution)
-            self.puzzle2 = Puzzle2GC()
-        else:
-            self.background = Background(0, 0, Background.MTimage)
-            self.puzzle1 = Puzzle1MT(self.solution)
-            self.puzzle2 = Puzzle2MT()
 
     def keyPressed(self, code, mod):
         pass
         
     def mousePressed(self, x, y):
-        if self.gameStart == True:
-            if self.player == "GC":
-                if True: # find dimensions later
-                    puzzle1Correct = self.puzzle1.buttonClick(x, y)
-                    if puzzle1Correct != None:
-                        forServer = True
-                        msg = "puzzle1Response %s %s\n" % (forServer, puzzle1Correct)
-                        print ("sending: ", msg,)
-                        self.server.send(msg.encode())
-                if self.puzzle2.x <= x <= self.puzzle2.x + 8 * self.puzzle2.tileSize and \
-                   self.puzzle2.y <= y <= self.puzzle2.y + 8 * self.puzzle2.tileSize:
-                    move = self.puzzle2.tileClick(x, y)
-                    if move != None:
-                        forServer = True
-                        row = move[0]
-                        col = move[1]
-                        newRow = move[2]
-                        newCol = move[3]
-                        msg = "puzzle2MoveMade %s %d %d %d %d\n" % (forServer, row, col, newRow, newCol)
-                        print ("sending: ", msg,)
-                        self.server.send(msg.encode())
-                elif self.puzzle2.highlight.sprite != None:
-                    self.puzzle2.clickedTile = None
-                    self.puzzle2.highlight.sprite.kill()
-            else:
-                pass
+        if self.mode == "Game":
+            msg = self.game.mousePressed(x, y)
+            if msg != None:
+                self.server.send(msg.encode())
+            # look up mode connections
 
     def timerFired(self):
         while (serverMsg.qsize() > 0):
@@ -111,7 +73,7 @@ class Game(PygameGame):
                 myPID = msg[1]
                 self.player = myPID
                 print("my ID is:", self.player)
-                self.playerInit()
+                self.game = GameMode(self.player)#playerInit()
     
             elif (command == "newPlayer"):
                 self.gameStart = True
@@ -120,33 +82,36 @@ class Game(PygameGame):
             elif (command == "puzzle1Reception"):
                 correct = msg[1]
                 if correct == "True":
-                    self.solution = msg[2]
+                    self.game.solution = msg[2]
                     if self.player == "GC":
-                        self.puzzle1 = Puzzle1GC(self.solution)
+                        self.game.puzzle1 = Puzzle1GC(self.game.solution)
                     else:
-                        self.puzzle1 = Puzzle1MT(self.solution)
+                        self.game.puzzle1 = Puzzle1MT(self.game.solution)
                 else:
                     # impose penalty
-                    self.puzzle1.timer.sprite.penalty(35)
+                    self.game.puzzle1.timer.sprite.penalty(35)
 
             elif (command == "puzzle2Reception"):
                 legal = msg[1]
                 if legal == "True":
                     move = msg[2:]
-                    self.puzzle2.makeMove(move)
-                    self.puzzle2.update()
+                    self.game.puzzle2.makeMove(move)
+                    self.game.puzzle2.update()
                 else:
                     # impose penalty
-                    self.puzzle2.timer.sprite.penalty(10)
+                    self.game.puzzle2.timer.sprite.penalty(10)
 
             elif (command == "puzzle2Won"):
-                if self.player == "GC":
-                    self.puzzle2 = Puzzle2GC()
+                if self.game.player == "GC":
+                    self.game.puzzle2 = Puzzle2GC()
                 else:
-                    self.puzzle2 = Puzzle2MT()
+                    self.game.puzzle2 = Puzzle2MT()
             #except:
               #  print("failed")
             serverMsg.task_done()
+        if self.mode == "Game":
+            self.game.timerFired()
+        '''
         if self.gameStart:
             if self.player == "GC":
                 pass
@@ -154,13 +119,15 @@ class Game(PygameGame):
                 self.puzzle1.update()
             self.puzzle1.timer.update()
             self.puzzle2.timer.update()
+            # check if puzzle failed
+            if self.puzzle1.timer.timerDone() or \
+               self.puzzle2.timer.timerDone():
+                pass
+        '''
 
     def redrawAll(self, screen):
-        screen.blit(self.background.image, self.background.rect)
-        if self.puzzle1 != None:
-            self.puzzle1.draw(screen)
-        if self.puzzle2 != None:
-            self.puzzle2.draw(screen)
+        if self.mode == "Game":
+            self.game.draw(screen)
         
 serverMsg = Queue(100)
 threading.Thread(target = handleServerMsg, args = (server, serverMsg)).start()
