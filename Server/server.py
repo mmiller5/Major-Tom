@@ -64,6 +64,21 @@ def serverThread(clientele, serverChannel):
 def serverMessage(msg):
     command = msg[1]
     print(command)
+    '''
+    if (command == "gameStart"):
+        msg[0] = player
+        if player = "p1":
+            gameStart[0] = True
+        else:
+            gameStart[1] = True
+        if gameStart[0] and gameStart[1]:
+            instruction = "startGame"
+            for cID in clientele:
+                sendMsg = instruction + "\n"
+                clientele[cID].send(sendMsg.encode())
+                print("> sent to %s:" % cID, sendMsg[:-1])
+    '''
+    
     if (command == "puzzle1Response"):
         correct = msg[3]
         instruction = "puzzle1Reception"
@@ -121,8 +136,7 @@ def serverMessage(msg):
                 clientele[cID].send(sendMsg.encode())
                 print("> sent to %s:" % cID, sendMsg[:-1])
 
-    elif (command == "newPlayer"):
-        pass
+    
     
     elif (command == "puzzle1Solution"):
         pass
@@ -135,6 +149,7 @@ threading.Thread(target = serverThread, args = (clientele, serverChannel)).start
 
 # change to p1 and p2
 names = ["p1", "p2"]
+gameStart = [False, False]
 
 while True:
     client, address = server.accept()

@@ -9,8 +9,10 @@ class StartMode(Mode):
     @staticmethod
     def init():
         StartButton.init()
+        Ready.init()
         PlayerButton.init()
         PlayerTracker.init()
+        Waiting.init()
     
     def __init__(self, playerNum):
         self.playerNum = playerNum
@@ -18,8 +20,10 @@ class StartMode(Mode):
         self.buttons = set()
         self.makePlayerButtons()
         self.makeStartButton()
+        self.makeReady()
         self.trackers = set()
         self.makePlayerTracker()
+        self.makeWaiting()
     
     def makePlayerButtons(self):
         gcImage = PlayerButton.GCButton
@@ -46,6 +50,16 @@ class StartMode(Mode):
         self.p2Tracker = pygame.sprite.GroupSingle(p2Tracker)
         self.trackers.add(self.p2Tracker)
     
+    def makeWaiting(self):
+        image = Waiting.waitingImage
+        waiting = Waiting(0, 0, image)
+        self.waiting = pygame.sprite.GroupSingle(waiting)
+    
+    def makeReady(self):
+        image = Ready.ready
+        ready = Ready(458, 446, image)
+        self.readyImage = pygame.sprite.GroupSingle(ready)
+        
     def timerFired(self):
         pass
     
@@ -60,17 +74,15 @@ class StartMode(Mode):
             button.draw(screen)
         for tracker in self.trackers:
             tracker.draw(screen)
-
-
-
-
+        self.readyImage.draw(screen)
+    
+    def drawWaiting(self, screen):
+        self.waiting.draw(screen)
 
 class StartButton(Button):
     @staticmethod
     def init():
         StartButton.startImage = pygame.image.load('images/StartButton.png').convert_alpha()
-        StartButton.ready = pygame.image.load('images/ready.png').convert_alpha()
-        StartButton.notReady = pygame.image.load('images/notReady.png').convert_alpha()
     
     def __init__(self, x, y):
         super(StartButton, self).__init__(x, y, StartButton.startImage)
@@ -81,7 +93,9 @@ class StartButton(Button):
         self.isReady = True
     
     def clicked(self):
+        print("clicked start")
         if self.isReady:
+            print("is ready")
             return ("Start")
     
     def findIsReady(self, player, otherPlayer):
@@ -89,6 +103,7 @@ class StartButton(Button):
             self.isReady = False
         else:
             self.isReady = True
+        return self.isReady
     
     # taken from Lucas Peraza's GameObject.py,
     # https://github.com/LBPeraza/Pygame-Asteroids
@@ -98,10 +113,33 @@ class StartButton(Button):
         self.width, self.height = w, h
         self.rect = pygame.Rect(self.x, self.y, w, h)
 
+class Ready(pygame.sprite.Sprite):
+    @staticmethod
+    def init():
+        Ready.ready = pygame.image.load('images/ready.png').convert_alpha()
+        Ready.notReady = pygame.image.load('images/notReady.png').convert_alpha()
 
-
-
-
+    def __init__(self, x, y, image):
+        super(Ready, self).__init__()
+        self.x = x
+        self.y = y
+        self.image = image
+        self.baseImage = image.copy()
+        self.updateRect()
+    
+    # taken from Lucas Peraza's GameObject.py,
+    # https://github.com/LBPeraza/Pygame-Asteroids
+    def updateRect(self):
+        w, h = self.image.get_size()
+        self.width, self.height = w, h
+        self.rect = pygame.Rect(self.x, self.y, w, h)
+    
+    def changeImage(self, isReady):
+        if isReady:
+            self.image = Ready.ready
+        else:
+            self.image = Ready.notReady
+        self.updateRect()
 
 class PlayerButton(Button):
     @staticmethod
@@ -160,8 +198,27 @@ class PlayerTracker(pygame.sprite.Sprite):
         else:
             self.y = 326
         self.updateRect()
-        
-        
+    
+class Waiting(pygame.sprite.Sprite):
+    @staticmethod
+    def init():
+        image = pygame.image.load('images/waiting.png').convert_alpha()
+        Waiting.waitingImage = image
+
+    def __init__(self, x, y, image):
+        super(Waiting, self).__init__()
+        self.x = x
+        self.y = y
+        self.image = image
+        self.baseImage = image.copy()
+        self.updateRect()
+    
+    # taken from Lucas Peraza's GameObject.py,
+    # https://github.com/LBPeraza/Pygame-Asteroids
+    def updateRect(self):
+        w, h = self.image.get_size()
+        self.width, self.height = w, h
+        self.rect = pygame.Rect(self.x, self.y, w, h)
         
         
         

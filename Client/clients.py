@@ -46,6 +46,8 @@ class Game(PygameGame):
         self.playerNumber = "To be determined by server"
         self.player = "To be determined"
         self.otherPlayer = None
+        self.playerReady = False
+        self.otherPlayerReady = False
         Background.init()
         StartMode.init()
         GameMode.init()
@@ -61,16 +63,20 @@ class Game(PygameGame):
         
     def mousePressed(self, x, y):
         if self.mode == "Start":
-            result = self.start.mousePressed(x, y)
-            if result != None:
-                if result[0] == "Player":
-                    self.player = result[1]
-                    forServer = False
-                    msg = "playerSelection %s %s %s\n" % (forServer, self.playerNumber, self.player)
-                    print ("sending: ", msg,)
-                    self.server.send(msg.encode())
-                elif result[0] == "Start":
-                    pass
+            if not self.isWaiting:
+                result = self.start.mousePressed(x, y)
+                if result != None:
+                    if result[0] == "Player":
+                        self.player = result[1]
+                        forServer = False
+                        msg = "playerSelection %s %s %s\n" % (forServer, self.playerNumber, self.player)
+                        print ("sending: ", msg,)
+                        self.server.send(msg.encode())
+                    elif result == "Start":
+                        forServer = False
+                        msg = "gameStart %s %s\n" % (forServer, self.playerNumber)
+                        print ("sending: ", msg,)
+                        self.server.send(msg.encode())
                 
         elif self.mode == "Game":
             msg = self.game.mousePressed(x, y)
@@ -95,10 +101,9 @@ class Game(PygameGame):
                     self.player = "GC"
                 else:
                     self.player = "MT"
-                #self.game = GameMode(self.playerNumber)
     
             elif (command == "newPlayer"):
-                self.gameStart = True
+                self.isWaiting = False
                 print("There's another player!")
     
             elif (command == "playerSelection"):
@@ -110,7 +115,18 @@ class Game(PygameGame):
                     self.start.p1Tracker.sprite.move(player)
                 else:
                     self.start.p2Tracker.sprite.move(player)
-                self.start.startButton.findIsReady(self.player, self.otherPlayer)
+                isReady = self.start.startButton.sprite.findIsReady(self.player, self.otherPlayer)
+                self.start.readyImage.sprite.changeImage(isReady)
+
+            elif (command == "gameStart"):
+                playerNum = msg[1]
+                if playerNum != self.playerNumber:
+                    self.otherPlayerReady = True
+                else:
+                    self.playerReady = True
+                if self.playerReady and self.otherPlayerReady:
+                    self.mode = "Game"
+                    self.game = GameMode(self.player)
 
             elif (command == "puzzle1Reception"):
                 correct = msg[1]
@@ -149,6 +165,8 @@ class Game(PygameGame):
     def redrawAll(self, screen):
         if self.mode == "Start":
             self.start.draw(screen)
+            if self.isWaiting:
+                self.start.drawWaiting(screen)
         elif self.mode == "Game":
             self.game.draw(screen)
         
