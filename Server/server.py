@@ -133,7 +133,8 @@ playerNum = 0
 serverChannel = Queue(100)
 threading.Thread(target = serverThread, args = (clientele, serverChannel)).start()
 
-names = ["MT", "GC"]
+# change to p1 and p2
+names = ["p1", "p2"]
 
 while True:
     client, address = server.accept()

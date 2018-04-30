@@ -35,6 +35,7 @@ def handleServerMsg(server, serverMsg):
 
 from background import *
 from gameScreen import *
+from startMenu import *
 import random
 import pygame
 from pygamegame import PygameGame
@@ -42,23 +43,39 @@ from pygamegame import PygameGame
 class Game(PygameGame):
     def init(self):
         self.bgColor = (180, 180, 180)
-        self.player = "To be determined by server"
+        self.playerNumber = "To be determined by server"
+        self.player = "To be determined"
+        self.otherPlayer = None
         Background.init()
+        StartMode.init()
         GameMode.init()
         self.background = None
-        self.mode = "Game"
+        self.mode = "Start"
+        self.start = None
         self.game = None
         self.gameStart = False
+        self.isWaiting = True
 
     def keyPressed(self, code, mod):
         pass
         
     def mousePressed(self, x, y):
-        if self.mode == "Game":
+        if self.mode == "Start":
+            result = self.start.mousePressed(x, y)
+            if result != None:
+                if result[0] == "Player":
+                    self.player = result[1]
+                    forServer = False
+                    msg = "playerSelection %s %s %s\n" % (forServer, self.playerNumber, self.player)
+                    print ("sending: ", msg,)
+                    self.server.send(msg.encode())
+                elif result[0] == "Start":
+                    pass
+                
+        elif self.mode == "Game":
             msg = self.game.mousePressed(x, y)
             if msg != None:
                 self.server.send(msg.encode())
-            # look up mode connections
 
     def timerFired(self):
         while (serverMsg.qsize() > 0):
@@ -71,13 +88,29 @@ class Game(PygameGame):
             
             if (command == "myIDis"):
                 myPID = msg[1]
-                self.player = myPID
-                print("my ID is:", self.player)
-                self.game = GameMode(self.player)#playerInit()
+                self.playerNumber = myPID
+                print("my ID is:", self.playerNumber)
+                self.start = StartMode(self.playerNumber)
+                if myPID == "p1":
+                    self.player = "GC"
+                else:
+                    self.player = "MT"
+                #self.game = GameMode(self.playerNumber)
     
             elif (command == "newPlayer"):
                 self.gameStart = True
                 print("There's another player!")
+    
+            elif (command == "playerSelection"):
+                playerNum = msg[1]
+                player = msg[2]
+                if playerNum != self.playerNumber:
+                    self.otherPlayer = player
+                if playerNum == "p1":
+                    self.start.p1Tracker.sprite.move(player)
+                else:
+                    self.start.p2Tracker.sprite.move(player)
+                self.start.startButton.findIsReady(self.player, self.otherPlayer)
 
             elif (command == "puzzle1Reception"):
                 correct = msg[1]
@@ -88,7 +121,6 @@ class Game(PygameGame):
                     else:
                         self.game.puzzle1 = Puzzle1MT(self.game.solution)
                 else:
-                    # impose penalty
                     self.game.puzzle1.timer.sprite.penalty(35)
 
             elif (command == "puzzle2Reception"):
@@ -98,7 +130,6 @@ class Game(PygameGame):
                     self.game.puzzle2.makeMove(move)
                     self.game.puzzle2.update()
                 else:
-                    # impose penalty
                     self.game.puzzle2.timer.sprite.penalty(10)
 
             elif (command == "puzzle2Won"):
@@ -109,24 +140,16 @@ class Game(PygameGame):
             #except:
               #  print("failed")
             serverMsg.task_done()
-        if self.mode == "Game":
+        if self.mode == "Start":
+            pass
+        elif self.mode == "Game":
             self.game.timerFired()
-        '''
-        if self.gameStart:
-            if self.player == "GC":
-                pass
-            else:
-                self.puzzle1.update()
-            self.puzzle1.timer.update()
-            self.puzzle2.timer.update()
-            # check if puzzle failed
-            if self.puzzle1.timer.timerDone() or \
-               self.puzzle2.timer.timerDone():
-                pass
-        '''
+        
 
     def redrawAll(self, screen):
-        if self.mode == "Game":
+        if self.mode == "Start":
+            self.start.draw(screen)
+        elif self.mode == "Game":
             self.game.draw(screen)
         
 serverMsg = Queue(100)
