@@ -99,8 +99,10 @@ class Game(PygameGame):
                 self.start = StartMode(self.playerNumber)
                 if myPID == "p1":
                     self.player = "GC"
+                    self.otherPlayer = "MT"
                 else:
                     self.player = "MT"
+                    self.otherPlayer = "GC"
     
             elif (command == "newPlayer"):
                 self.isWaiting = False

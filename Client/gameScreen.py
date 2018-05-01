@@ -6,6 +6,8 @@ from puzzle1GC import *
 from puzzle1MT import *
 from puzzle2GC import *
 from puzzle2MT import *
+from puzzle3GC import *
+from puzzle3MT import *
 import random
 import pygame
 from pygamegame import PygameGame
@@ -15,21 +17,24 @@ class GameMode(Mode):
     def init():
         Puzzle1.init()
         Puzzle2.init()
-        #Puzzle3.init()
+        Puzzle3.init()
         Timer.init()
 
     def __init__(self, player):
         self.player = player
         self.solution = "Z"
+        self.board = [["Up",1], ["Down",2], ["Up",3], ["Down",1], ["Up",2], ["Down",3]]
         self.background = None
         if self.player == "GC":
             self.background = Background(0, 0, Background.GCimage)
             self.puzzle1 = Puzzle1GC(self.solution)
             self.puzzle2 = Puzzle2GC()
+            self.puzzle3 = Puzzle3GC(self.board)
         else:
             self.background = Background(0, 0, Background.MTimage)
             self.puzzle1 = Puzzle1MT(self.solution)
             self.puzzle2 = Puzzle2MT()
+            self.puzzle3 = Puzzle3MT(self.board)
     
     def mousePressed(self, x, y):
         if self.player == "GC":
@@ -56,7 +61,9 @@ class GameMode(Mode):
                 self.puzzle2.clickedTile = None
                 self.puzzle2.highlight.sprite.kill()
         else:
-            pass
+            if 6 <= x <= 218 and \
+               294 <= y <= 324:
+                self.puzzle3.mousePressed(x, y)
         return None
     
     def timerFired(self):
@@ -66,9 +73,11 @@ class GameMode(Mode):
             self.puzzle1.update()
         self.puzzle1.timer.update()
         self.puzzle2.timer.update()
+        self.puzzle3.timer.update()
         # check if puzzle failed
         if self.puzzle1.timer.sprite.timerDone() or \
-            self.puzzle2.timer.sprite.timerDone():
+           self.puzzle2.timer.sprite.timerDone() or \
+           self.puzzle3.timer.sprite.timerDone():
             pass
     
     def draw(self, screen):
@@ -77,3 +86,5 @@ class GameMode(Mode):
             self.puzzle1.draw(screen)
         if self.puzzle2 != None:
             self.puzzle2.draw(screen)
+        if self.puzzle3 != None:
+            self.puzzle3.draw(screen)

@@ -167,7 +167,6 @@ class PlayerButton(Button):
         self.width, self.height = w, h
         self.rect = pygame.Rect(self.x, self.y, w, h)
 
-
 class PlayerTracker(pygame.sprite.Sprite):
     @staticmethod
     def init():
