@@ -13,6 +13,7 @@ from queue import Queue
 from puzzle1Generate import *
 from puzzle2Logic import *
 from puzzle2AI import *
+from puzzle3Generate import *
 
 HOST = "" # put your IP address here if playing on multiple computers
 PORT = 50004
@@ -64,21 +65,6 @@ def serverThread(clientele, serverChannel):
 def serverMessage(msg):
     command = msg[1]
     print(command)
-    '''
-    if (command == "gameStart"):
-        msg[0] = player
-        if player = "p1":
-            gameStart[0] = True
-        else:
-            gameStart[1] = True
-        if gameStart[0] and gameStart[1]:
-            instruction = "startGame"
-            for cID in clientele:
-                sendMsg = instruction + "\n"
-                clientele[cID].send(sendMsg.encode())
-                print("> sent to %s:" % cID, sendMsg[:-1])
-    '''
-    
     if (command == "puzzle1Response"):
         correct = msg[3]
         instruction = "puzzle1Reception"
@@ -135,11 +121,23 @@ def serverMessage(msg):
                 sendMsg = instruction + " " + legal + "\n"
                 clientele[cID].send(sendMsg.encode())
                 print("> sent to %s:" % cID, sendMsg[:-1])
+    
+    elif (command == "puzzle3Won"):
+        instruction = "newPuzzle3"
+        newBoard = puzzle3Generate()
+        for cID in clientele:
+            sendMsg = instruction + " %s %d %s %d %s %d %s %d %s %d %s %d\n" % (newBoard[0][0], newBoard[0][1], \
+                                                                               newBoard[1][0], newBoard[1][1], \
+                                                                               newBoard[2][0], newBoard[2][1], \
+                                                                               newBoard[3][0], newBoard[3][1], \
+                                                                               newBoard[4][0], newBoard[4][1], \
+                                                                               newBoard[5][0], newBoard[5][1])
+            clientele[cID].send(sendMsg.encode())
+            print("> sent to %s:" % cID, sendMsg[:-1])
+        
 
     
-    
-    elif (command == "puzzle1Solution"):
-        pass
+
 
 clientele = dict()
 playerNum = 0

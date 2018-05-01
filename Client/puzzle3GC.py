@@ -6,7 +6,7 @@ class Puzzle3GC(Puzzle3):
     def __init__(self, board):
         super().__init__(board)
         self.board = board
-        timer = Timer(25, 308, Timer.image, 3000)
+        timer = Timer(25, 308, Timer.image, 1700)
         self.timer = pygame.sprite.GroupSingle(timer)
         numbers = self.makeNumbers()
         self.numbers = pygame.sprite.Group()

@@ -156,10 +156,20 @@ class Game(PygameGame):
                 else:
                     self.game.puzzle2 = Puzzle2MT()
             
-            elif(command == "puzzle3TumblerMove"):
+            elif (command == "puzzle3TumblerMove"):
                 if self.player == "MT":
                     number = int(msg[1])
                     self.game.puzzle3.moveTumblers(number)
+    
+            elif (command == "newPuzzle3"):
+                newBoard = []
+                for i in range(1, 13, 2):
+                    print(msg[i])
+                    newBoard.append([msg[i], int(msg[i + 1])])
+                if self.player == "GC":
+                    self.game.puzzle3 = Puzzle3GC(newBoard)
+                else:
+                    self.game.puzzle3 = Puzzle3MT(newBoard)
             #except:
               #  print("failed")
             serverMsg.task_done()

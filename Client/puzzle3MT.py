@@ -1,13 +1,14 @@
 # Specific class for what Major Tom receives of the tumbler
 
 from puzzle3 import *
+import copy
 
 class Puzzle3MT(Puzzle3):
     def __init__(self, board):
         super().__init__(board)
         self.board = board
-        self.originalBoard = self.board
-        timer = Timer(17, 424, Timer.image, 3000)
+        #self.originalBoard = copy.deepcopy(self.board)
+        timer = Timer(17, 424, Timer.image, 1700)
         self.timer = pygame.sprite.GroupSingle(timer)
         tumblers = self.makeTumblers()
         self.tumblers = pygame.sprite.Group()
@@ -55,7 +56,7 @@ class Puzzle3MT(Puzzle3):
             if arrow.rect.collidepoint(x, y):
                 direction = arrow.direction
                 print(direction)
-                self.movePlayer(direction)
+                return self.movePlayer(direction)
     
     def moveTumblers(self, number):
         for tumbler in self.tumblers:
@@ -75,7 +76,7 @@ class Puzzle3MT(Puzzle3):
         newLocation = max(-1, min(6, self.player.sprite.position + moveAmt))
         if newLocation == 6:
             self.player.sprite.move(newLocation)  
-            self.puzzle3Won()
+            return self.puzzle3Won()
         elif newLocation == -1 or board[newLocation][0] == "Up":
             self.player.sprite.move(newLocation)            
     
@@ -88,11 +89,11 @@ class Puzzle3MT(Puzzle3):
     
     def puzzle3Won(self):
         print("won")
-        pass
+        return True
     
     def puzzle3Reset(self):
         print("dead")
-        pass
+        self.makePlayer()
     
     def draw(self, screen):
         self.tumblers.draw(screen)

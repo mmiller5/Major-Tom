@@ -72,7 +72,12 @@ class GameMode(Mode):
         else:
             if 6 <= x <= 218 and \
                294 <= y <= 324:
-                self.puzzle3.mousePressed(x, y)
+                won = self.puzzle3.mousePressed(x, y)
+                if won != None:
+                    forServer = True
+                    msg = "puzzle3Won %s\n" % (forServer)
+                    print ("sending: ", msg,)
+                    return msg
         return None
     
     def timerFired(self):
