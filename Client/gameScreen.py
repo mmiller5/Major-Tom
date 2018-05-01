@@ -38,7 +38,8 @@ class GameMode(Mode):
     
     def mousePressed(self, x, y):
         if self.player == "GC":
-            if True: # find dimensions later
+            if 605 <= x <= 776 and \
+               249 <= y <= 288: # find dimensions later
                 puzzle1Correct = self.puzzle1.buttonClick(x, y)
                 if puzzle1Correct != None:
                     forServer = True
@@ -60,6 +61,14 @@ class GameMode(Mode):
             elif self.puzzle2.highlight.sprite != None:
                 self.puzzle2.clickedTile = None
                 self.puzzle2.highlight.sprite.kill()
+            if 21 <= x <= 198 and \
+               258 <= y <= 298:
+                   move = self.puzzle3.mousePressed(x, y)
+                   if move != None:
+                    forServer = False
+                    msg = "puzzle3TumblerMove %s %d\n" % (forServer, move)
+                    print ("sending: ", msg,)
+                    return msg
         else:
             if 6 <= x <= 218 and \
                294 <= y <= 324:

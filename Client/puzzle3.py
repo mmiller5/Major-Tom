@@ -43,7 +43,7 @@ class Puzzle3(object):
         Puzzle3.left = pygame.image.load('images/puzzle3Left.png').convert_alpha()
         Puzzle3.right = pygame.image.load('images/puzzle3Right.png').convert_alpha()
         Puzzle3.tumbler = pygame.image.load('images/puzzle3Tumbler.png').convert_alpha()
-        #character image
+        Puzzle3.player = pygame.image.load('images/puzzle3Player.png').convert_alpha()
     
     def __init__(self, board):
         self.board = board

@@ -43,12 +43,13 @@ class Puzzle3GC(Puzzle3):
     def mousePressed(self, x, y):
         for button in self.buttons:
             if button.rect.collidepoint(x, y):
-                number = arrow.number
-                print(number)
+                number = button.number
+                return number
     
     def draw(self, screen):
         self.numbers.draw(screen)
         self.buttons.draw(screen)
+        self.timer.draw(screen)
                 
 class Number(pygame.sprite.Sprite):
     def __init__(self, x, y, image):

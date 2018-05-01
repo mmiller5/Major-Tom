@@ -155,6 +155,11 @@ class Game(PygameGame):
                     self.game.puzzle2 = Puzzle2GC()
                 else:
                     self.game.puzzle2 = Puzzle2MT()
+            
+            elif(command == "puzzle3TumblerMove"):
+                if self.player == "MT":
+                    number = int(msg[1])
+                    self.game.puzzle3.moveTumblers(number)
             #except:
               #  print("failed")
             serverMsg.task_done()
