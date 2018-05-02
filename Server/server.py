@@ -87,7 +87,7 @@ def serverMessage(msg):
         instruction = "puzzle2Reception"
         legalMove = gameBoard.isLegalMove(move)
         # tests if won game
-        if legalMove and int(move[2]) == 0:
+        if legalMove and (int(move[2]) == 0 or gameBoard.whiteLeft == 0):
             instruction = "puzzle2Won"
             gameBoard.__init__()
             for cID in clientele:
@@ -106,15 +106,31 @@ def serverMessage(msg):
                 print("> sent to %s:" % cID, sendMsg[:-1])
             # Minnie make move
             moveToMake = getMove(gameBoard, 7)
-            row = int(moveToMake[0])
-            col = int(moveToMake[1])
-            newRow = int(moveToMake[2])
-            newCol = int(moveToMake[3])
-            gameBoard.makeMove(moveToMake, "Minnie")
-            for cID in clientele:
-                sendMsg = instruction + " " + legal + " %d %d %d %d\n" % (row, col, newRow, newCol)
-                clientele[cID].send(sendMsg.encode())
-                print("> sent to %s:" % cID, sendMsg[:-1])
+            if moveToMake != None:
+                row = int(moveToMake[0])
+                col = int(moveToMake[1])
+                newRow = int(moveToMake[2])
+                newCol = int(moveToMake[3])
+                gameBoard.makeMove(moveToMake, "Minnie")
+                if gameBoard.blackLeft == 0:
+                    instruction = "puzzle2Reset"
+                    gameBoard.__init__()
+                    for cID in clientele:
+                        sendMsg = instruction + "\n"
+                        clientele[cID].send(sendMsg.encode())
+                        print("> sent to %s:" % cID, sendMsg[:-1])
+                else:
+                    for cID in clientele:
+                        sendMsg = instruction + " " + legal + " %d %d %d %d\n" % (row, col, newRow, newCol)
+                        clientele[cID].send(sendMsg.encode())
+                        print("> sent to %s:" % cID, sendMsg[:-1])
+            else:
+                instruction = "puzzle2Won"
+                gameBoard.__init__()
+                for cID in clientele:
+                    sendMsg = instruction + "\n"
+                    clientele[cID].send(sendMsg.encode())
+                    print("> sent to %s:" % cID, sendMsg[:-1])
         else:
             legal = "False"
             for cID in clientele:

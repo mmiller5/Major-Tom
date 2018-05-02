@@ -156,6 +156,13 @@ class Game(PygameGame):
                 else:
                     self.game.puzzle2 = Puzzle2MT()
             
+            elif (command == "puzzle2Reset"):
+                self.game.puzzle2.board = self.game.puzzle2.makeBoard()
+                tiles = self.game.puzzle2.makeTiles()
+                self.game.puzzle2.tiles = pygame.sprite.Group()
+                for tile in tiles:
+                    self.game.puzzle2.tiles.add(tile)
+            
             elif (command == "puzzle3TumblerMove"):
                 if self.player == "MT":
                     number = int(msg[1])
