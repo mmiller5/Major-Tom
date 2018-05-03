@@ -38,7 +38,7 @@ class PygameGame(object):
         ''' return whether a specific key is being held '''
         return self._keys.get(key, False)
 
-    def __init__(self, width=600, height=400, fps=50, title="112 Pygame Game"):
+    def __init__(self, width=600, height=400, fps=50, title="Ground Control to Major Tom"):
         self.width = width
         self.height = height
         self.fps = fps
@@ -63,6 +63,9 @@ class PygameGame(object):
         while playing:
             time = clock.tick(self.fps)
             self.timerFired()#time)
+            screen.fill(self.bgColor)
+            self.redrawAll(screen)
+            pygame.display.flip()
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     self.mousePressed(*(event.pos))
@@ -81,11 +84,10 @@ class PygameGame(object):
                     self._keys[event.key] = False
                     self.keyReleased(event.key, event.mod)
                 elif event.type == pygame.QUIT:
+                    pygame.display.quit()
                     playing = False
-            screen.fill(self.bgColor)
-            self.redrawAll(screen)
-            pygame.display.flip()
-
+            
+        print("would normally quit game, but sockets don't care")
         pygame.quit()
 
 

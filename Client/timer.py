@@ -5,8 +5,7 @@ import pygame
 class Timer(pygame.sprite.Sprite):
     @staticmethod
     def init():
-        image = pygame.image.load('images/timer.png').convert_alpha()
-        Timer.image = image
+        Timer.image = pygame.image.load('images/timer.png').convert_alpha()
 
     def __init__(self, x, y, image, totalTime):
         super(Timer, self).__init__()

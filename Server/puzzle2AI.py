@@ -5,17 +5,18 @@ https://drive.google.com/drive/folders/1lLCArvni4VB6sL6wTP3qZv-B8_lX2kxX
 modified by me
 '''
 from puzzle2Logic import *
+import random
 
 def MaxieMoveAlphaBeta(board, depth, alpha, beta):
     assert(alpha < beta)
-    if False:#board.isGameOver():
-        return (None, 100) if board.won("Maxie") else (None, -100)
-    elif depth == 0:
+    if depth == 0:
         return (None, board.heuristic(board))
     else:
         bestMove = None
         bestScore = -100
-        for move in board.legalMoves("Maxie"):
+        moves = board.legalMoves("Maxie")
+        random.shuffle(moves)
+        for move in moves:
             board.makeMove(move, "Maxie")
             moveScore = MinnieMoveAlphaBeta(board, depth - 1, alpha, beta)[1]
             board.undoMove(move, "Maxie")
@@ -31,14 +32,14 @@ def MaxieMoveAlphaBeta(board, depth, alpha, beta):
 # the board score
 def MinnieMoveAlphaBeta(board, depth, alpha, beta):
     assert(alpha < beta)
-    if False:#board.isGameOver():
-        return (None, -100) if board.won("Minnie") else (None, 100)
-    elif depth == 0:
+    if depth == 0:
         return (None, board.heuristic(board))
     else:
         bestMove = None
         bestScore = 100
-        for move in board.legalMoves("Minnie"):
+        moves = board.legalMoves("Minnie")
+        random.shuffle(moves)
+        for move in moves:
             board.makeMove(move, "Minnie")
             moveScore = MaxieMoveAlphaBeta(board, depth - 1, alpha, beta)[1]
             board.undoMove(move, "Minnie")

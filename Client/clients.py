@@ -36,6 +36,7 @@ def handleServerMsg(server, serverMsg):
 from background import *
 from gameScreen import *
 from startMenu import *
+from endMenu import *
 import random
 import pygame
 from pygamegame import PygameGame
@@ -51,10 +52,12 @@ class Game(PygameGame):
         Background.init()
         StartMode.init()
         GameMode.init()
+        EndMode.init()
         self.background = None
         self.mode = "Start"
         self.start = None
         self.game = None
+        self.end = None
         self.gameStart = False
         self.isWaiting = True
 
@@ -82,6 +85,11 @@ class Game(PygameGame):
             msg = self.game.mousePressed(x, y)
             if msg != None:
                 self.server.send(msg.encode())
+        
+        elif self.mode == "End":
+            result = self.end.mousePressed(x, y)
+            if result != None:
+                self.mode = "Start"
 
     def timerFired(self):
         while (serverMsg.qsize() > 0):
@@ -129,6 +137,8 @@ class Game(PygameGame):
                 if self.playerReady and self.otherPlayerReady:
                     self.mode = "Game"
                     self.game = GameMode(self.player)
+                    self.playerReady = False
+                    self.otherPlayerReady = False
 
             elif (command == "puzzle1Reception"):
                 correct = msg[1]
@@ -155,14 +165,14 @@ class Game(PygameGame):
                     self.game.puzzle2 = Puzzle2GC()
                 else:
                     self.game.puzzle2 = Puzzle2MT()
-            
+    
             elif (command == "puzzle2Reset"):
                 self.game.puzzle2.board = self.game.puzzle2.makeBoard()
                 tiles = self.game.puzzle2.makeTiles()
                 self.game.puzzle2.tiles = pygame.sprite.Group()
                 for tile in tiles:
                     self.game.puzzle2.tiles.add(tile)
-            
+    
             elif (command == "puzzle3TumblerMove"):
                 if self.player == "MT":
                     number = int(msg[1])
@@ -177,13 +187,24 @@ class Game(PygameGame):
                     self.game.puzzle3 = Puzzle3GC(newBoard)
                 else:
                     self.game.puzzle3 = Puzzle3MT(newBoard)
+
+            elif (command == "gameLost"):
+                self.end = EndMode("Lost")
+                self.mode = "End"
+            
+            elif (command == "gameWon"):
+                self.end = EndMode("Won")
+                self.mode = "End"
+                
             #except:
               #  print("failed")
             serverMsg.task_done()
         if self.mode == "Start":
             pass
         elif self.mode == "Game":
-            self.game.timerFired()
+            msg = self.game.timerFired()
+            if msg != None:
+                self.server.send(msg.encode())
         
 
     def redrawAll(self, screen):
@@ -193,6 +214,9 @@ class Game(PygameGame):
                 self.start.drawWaiting(screen)
         elif self.mode == "Game":
             self.game.draw(screen)
+        elif self.mode == "End":
+            self.end.draw(screen)
+        
         
 serverMsg = Queue(100)
 threading.Thread(target = handleServerMsg, args = (server, serverMsg)).start()

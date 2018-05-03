@@ -8,6 +8,7 @@ from puzzle2GC import *
 from puzzle2MT import *
 from puzzle3GC import *
 from puzzle3MT import *
+from endTimer import *
 import random
 import pygame
 from pygamegame import PygameGame
@@ -25,11 +26,14 @@ class GameMode(Mode):
         self.solution = "Z"
         self.board = [["Up",1], ["Down",2], ["Up",3], ["Down",1], ["Up",2], ["Down",3]]
         self.background = None
+        self.endTimer = None
         if self.player == "GC":
             self.background = Background(0, 0, Background.GCimage)
             self.puzzle1 = Puzzle1GC(self.solution)
             self.puzzle2 = Puzzle2GC()
             self.puzzle3 = Puzzle3GC(self.board)
+            endTimer = EndTimer(22, 15, Timer.image, 10000)
+            self.endTimer = pygame.sprite.GroupSingle(endTimer)
         else:
             self.background = Background(0, 0, Background.MTimage)
             self.puzzle1 = Puzzle1MT(self.solution)
@@ -39,7 +43,7 @@ class GameMode(Mode):
     def mousePressed(self, x, y):
         if self.player == "GC":
             if 605 <= x <= 776 and \
-               249 <= y <= 288: # find dimensions later
+               249 <= y <= 288:
                 puzzle1Correct = self.puzzle1.buttonClick(x, y)
                 if puzzle1Correct != None:
                     forServer = True
@@ -82,7 +86,12 @@ class GameMode(Mode):
     
     def timerFired(self):
         if self.player == "GC":
-            pass
+            self.endTimer.update()
+            if self.endTimer.sprite.timerDone():
+                forServer = False
+                msg = "gameWon %s\n" % (forServer)
+                print ("sending: ", msg,)
+                return msg
         else:
             self.puzzle1.update()
         self.puzzle1.timer.update()
@@ -92,7 +101,10 @@ class GameMode(Mode):
         if self.puzzle1.timer.sprite.timerDone() or \
            self.puzzle2.timer.sprite.timerDone() or \
            self.puzzle3.timer.sprite.timerDone():
-            pass
+            forServer = False
+            msg = "gameLost %s\n" % (forServer)
+            print ("sending: ", msg,)
+            return msg
     
     def draw(self, screen):
         screen.blit(self.background.image, self.background.rect)
@@ -102,3 +114,5 @@ class GameMode(Mode):
             self.puzzle2.draw(screen)
         if self.puzzle3 != None:
             self.puzzle3.draw(screen)
+        if self.endTimer != None:
+            self.endTimer.draw(screen)
